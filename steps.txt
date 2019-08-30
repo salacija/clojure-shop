@@ -1,0 +1,5 @@
+lein repl
+
+(start) - pokretanje aplikacije
+
+(mount.core/start  #'clojure-shop.db.core/*db*) - preduslov za pokretanje migracija
