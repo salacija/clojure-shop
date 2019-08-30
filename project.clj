@@ -33,7 +33,8 @@
                  [ring-webjars "0.2.0"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
-                 [selmer "1.12.12"]]
+                 [selmer "1.12.12"]
+                 [com.draines/postal "2.0.3"]]
 
   :min-lein-version "2.0.0"
   

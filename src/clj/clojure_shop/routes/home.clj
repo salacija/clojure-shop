@@ -5,8 +5,8 @@
     [clojure.java.io :as io]
     [clojure-shop.middleware :as middleware]
     [ring.util.http-response :as response]
-    [struct.core :as st]
-    [clojure_shop.validators.uservalidator :as userval]))
+    [clojure_shop.handlers.register_user_handler :as register-user]
+    [struct.core :as st]))
 
 (defn home-page [_]
   (layout/render _ "home.html"))
@@ -20,27 +20,18 @@
 (defn checkout-page [_]
   (layout/render _ "checkout.html"))
 
-(defn handle-registration [request] {:status 200 :body "POST request"})
 
-(defn handler [_]
-  {:status 200, :body "ok"})
-
-
-(defn register-user-handler [{:keys [params]}]
-  (response/ok
-    (let 
-      [
-        val-result (userval/validate-user params) 
-        errors (first val-result) 
-        data (second val-result)
-      ]
-      (if errors errors data))))
+(defn register [{:keys [params]}]
+  (let 
+    [errors (:errors (register-user/execute params))]
+    (if errors (response/bad-request errors) (layout/render [params] "successfull-registration.html" params))
+  ))
 
 (defn home-routes []
   ["" {:middleware [middleware/wrap-formats]}
   ["/" {:get home-page}]
    ["/register" {:get register-page
-                 :post register-user-handler}]
+                 :post register}]
   ["/products/:id" {:get product-page}]
   ["/checkout" {:get checkout-page}]
   ])
