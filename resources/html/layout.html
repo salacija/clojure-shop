@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>{{ pageName }}</title>
+  <title> {{ pageName }} </title>
   
   <!-- Font Awesome -->
   {% style "https://use.fontawesome.com/releases/v5.8.2/css/all.css" %}
@@ -27,8 +27,8 @@
     <div class="container">
 
       <!-- Brand -->
-      <a class="navbar-brand waves-effect" href="https://mdbootstrap.com/docs/jquery/" target="_blank">
-        <strong class="blue-text">Online Shop</strong>
+      <a class="navbar-brand waves-effect" href="/">
+        <strong class="blue-text">Online Shop {% if session.user %} ({{ session.user.username }}) {% endif %}</strong>
       </a>
 
       <!-- Collapse -->
@@ -43,35 +43,35 @@
         <!-- Left -->
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link waves-effect" href="#">Home
+            <a class="nav-link waves-effect" href="/">Home
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link waves-effect" href="https://mdbootstrap.com/docs/jquery/" target="_blank">About MDB</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link waves-effect" href="https://mdbootstrap.com/docs/jquery/getting-started/download/"
-              target="_blank">Free download</a>
-          </li>
+          {% if session.user %}
+            <li class="nav-item">
+              <a class="nav-link waves-effect" href="/logout">Logout</a>
+            </li>
+          {% else %}
+           <li class="nav-item">
+              <a class="nav-link waves-effect" href="/register">Register</a>
+           </li>
+           <li class="nav-item">
+              <a class="nav-link waves-effect" href="/login">Login</a>
+           </li>
+          {% endif %}
         </ul>
 
+       {% if session.user %}
         <!-- Right -->
         <ul class="navbar-nav nav-flex-icons">
           <li class="nav-item">
-            <a class="nav-link waves-effect">
+            <a class="nav-link waves-effect" href="/checkout">
               <span class="badge red z-depth-1 mr-1"> 1 </span>
               <i class="fas fa-shopping-cart"></i>
               <span class="clearfix d-none d-sm-inline-block"> Cart </span>
             </a>
           </li>
-
-          <li class="nav-item">
-            <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="nav-link border border-light rounded waves-effect"
-              target="_blank">
-              <i class=""></i>Login
-            </a>
-          </li>
         </ul>
+      {% endif %}
 
       </div>
 

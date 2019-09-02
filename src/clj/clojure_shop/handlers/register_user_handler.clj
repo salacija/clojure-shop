@@ -31,6 +31,6 @@
             data (second val-result)
         ]
         (if errors 
-            {:errors errors} 
+            {:errors (vals errors)} 
             (do (send-registration-email data "test") {:items data}))))
 
