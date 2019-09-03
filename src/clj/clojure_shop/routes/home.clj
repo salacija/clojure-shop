@@ -79,14 +79,37 @@
     (layout/view request "login.html" {:errors (conj [] "Invalid username or password.")})
   ))
 
+(defn product-exists-in-session [product request]
+  (let [products-in-session (-> request :session :cart)
+        ids-in-session (map (fn [p] (-> p :product :id)) products-in-session)]
+    (not (empty? (filter (fn [id] (= id (:id product))) ids-in-session)))
+    ))
+
+(defn update-product-quantity [productId request]
+  (let [product-from-session (first  (filter (fn [item] (= productId (-> item :product :id))) (-> request :session :cart )))]
+    (update product-from-session :quantity + (Integer. (-> request :params :quantity)))
+    ))
+
 (defn handle-add-to-cart [_]
   (if-let
     [product (get-product (Integer. (:productId (:params _))))]
-    (session/append! :cart {:product product :quantity (Integer. (:quantity (:params _)))} (str "/products?productId=" (:id product)) _)
-    (response/ok {:p (:productId (:params _))})
-  ))
+    (if
+      (product-exists-in-session product _)
+      (let [rest-of-the-products (filter (fn [item] (not= (Integer. (:id product)) (-> item :product :id))) (-> _ :session :cart))
+            product-id (Integer. (:productId (:params _)))
+            updated (update-product-quantity product-id _)]
+        (session/add! :cart (conj rest-of-the-products updated) (str "/products?productId=" (:id product)) _)
+        )
+      (session/append! :cart {:product product :quantity (Integer. (:quantity (:params _)))} (str "/products?productId=" (:id product)) _))))
 
-(defn handle-remove-from-cart [_])
+(defn handle-remove-from-cart [_]
+  (let [filtered-cart (filter (fn [item] (not= (from-query _ "productId") (-> item :product :id))) (-> _ :session :cart))]
+    (session/add! :cart filtered-cart "/checkout" _)))
+
+(defn place-order-handler [_]
+  (let [shipping-info (:params _)
+        cart-items (-> _ :session :cart)])
+  (session/remove! :cart "/order-placed" _))
 
 (defn home-routes []
   ["" {:middleware [middleware/wrap-formats]}
@@ -113,6 +136,11 @@
                                  :get handle-remove-from-cart}]
 
                 ["/logout"      {:get (fn [request] (session/remove! :user "/" request))}]
+
+                ["/place-order" {:post place-order-handler}]
+
+                ["/order-placed" {:get (fn [_] (layout/view _ "order-placed.html"))}]
+
                 ["/get-session" {:get (fn [request] (response/ok {:items (:session request)}))}]])
 
 

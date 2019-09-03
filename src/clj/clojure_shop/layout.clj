@@ -28,7 +28,7 @@
   ([request page data] 
   (render request 
                   page 
-                  (merge data {:session (:session request)})))
+                  (merge data {:session (:session request)} )))
   ([request page] (view request page {})))
 
 (defn error-page

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<br>
+
+<!--Main layout-->
+<main class="mt-5 pt-4">
+   <div class="container text-center">
+       <div class="alert alert-success">
+           <h2>Congratulations! </h2>
+           <p class="lead">Your order has been successfully received. Please proceed to {{ session.user.email }} for further instructions.</p>
+       </div>
+   </div>
+</main>
+<!--Main layout-->
+{% endblock %}
