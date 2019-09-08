@@ -4,6 +4,7 @@
        [clojure-shop.helpers.uploads :as upload]
        [ring.util.response :refer [redirect]]))
 
+
 (defn handle-product [_ query-fn]
   (if-let [success (query-fn (conj (:params _) {:image (:filename (:file (:params _)))}))]
     (do (upload/upload-handler (:file (:params _ ))) (redirect "/admin/products"))
@@ -21,6 +22,13 @@
       (do (delete-fn {:id (Integer. id)}) (redirect (str "/admin/" redirect-to))))
     (redirect "/error")))
 
+(defn handle-category [_ query-fn]
+  (if-let [success (query-fn (:params _))]
+    (redirect "/admin/categories")
+    (redirect "error")))
+
+(defn add-category [_] (handle-category _ db/create-category!))
+(defn update-category [_] (handle-category _ db/update-category!))
 
 
 

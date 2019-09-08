@@ -1,7 +1,7 @@
-(ns clojure-shop.handlers.cart_handlers
-  (:require [clojure-shop.session.helpers :as session]))
-
-
+(ns clojure-shop.handlers.pages
+  (:require
+    [clojure-shop.layout :as layout]
+    [clojure-shop.db.core :as db]))
 
 (def all-products [
                    {:id 1 :categoryId 1 :categoryName "All"          :name "Denim shirt" :isNew true :isBestSeller false :price 138 :image "https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" :description "Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolor suscipit libero eos atque quia ipsa sint voluptatibus! Beatae sit assumenda asperiores iure at maxime atque repellendus maiores quia sapiente."}
@@ -25,29 +25,34 @@
 (defn get-product [productId]
   (first (filter (fn [el] (= (:id el) productId)) all-products)))
 
-(defn product-exists-in-session [product request]
-  (let [products-in-session (-> request :session :cart)
-        ids-in-session (map (fn [p] (-> p :product :id)) products-in-session)]
-    (not (empty? (filter (fn [id] (= id (:id product))) ids-in-session)))
-    ))
+(defn from-query [request, param-name]
+  (let [param (or (get (:query-params request) param-name))]
+    (if param
+      (if (number? (read-string param)) (Integer. param) param)
+      param)))
 
-(defn update-product-quantity [productId request]
-  (let [product-from-session (first  (filter (fn [item] (= productId (-> item :product :id))) (-> request :session :cart )))]
-    (update product-from-session :quantity + (Integer. (-> request :params :quantity)))
-    ))
+(defn home [request]
+  (layout/view request "home.html" {:categories (db/get-categories)
+                                    :products (->
+                                                (from-query request "categoryId")
+                                                (get-products))}))
+(defn register [_]
+  (layout/view _ "register.html"))
 
-(defn add [_]
-  (if-let
-    [product (get-product (Integer. (:productId (:params _))))]
-    (if
-      (product-exists-in-session product _)
-      (let [rest-of-the-products (filter (fn [item] (not= (Integer. (:id product)) (-> item :product :id))) (-> _ :session :cart))
-            product-id (Integer. (:productId (:params _)))
-            updated (update-product-quantity product-id _)]
-        (session/add! :cart (conj rest-of-the-products updated) (str "/products?productId=" (:id product)) _)
-        )
-      (session/append! :cart {:product product :quantity (Integer. (:quantity (:params _)))} (str "/products?productId=" (:id product)) _))))
+(defn product [_]
+  (if-let [product (get-product (from-query _ "productId"))]
+    (layout/view _ "product.html" {:product product})
+    (layout/error-page {:error-details "Requested product doesnt' exist."}))
+  )
 
-(defn remove [_]
-  (let [filtered-cart (filter (fn [item] (not= (from-query _ "productId") (-> item :product :id))) (-> _ :session :cart))]
-    (session/add! :cart filtered-cart "/checkout" _)))
+(defn checkout [_]
+  (let [products (let [cart-items (-> _ :session :cart)]
+                   (map (fn [item] {:id (-> item :product :id)
+                                    :name (-> item :product :name)
+                                    :quantity (:quantity item)
+                                    :price (* (-> item :product :price) (:quantity item))}) cart-items))]
+    (layout/view _ "checkout.html" {:products products :totalPrice (reduce + (map (fn [item] (:price item)) products))})))
+
+
+(defn login [_]
+  (layout/view _ "login.html" {}))
