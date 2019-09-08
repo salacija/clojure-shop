@@ -58,6 +58,11 @@
               <a class="nav-link waves-effect" href="/login">Login</a>
            </li>
           {% endif %}
+          {% if session.user.isadmin %}
+            <li class="nav-item">
+              <a class="nav-link waves-effect" href="/admin">Admin</a>
+            </li>
+          {% endif %}
         </ul>
 
        {% if session.user %}

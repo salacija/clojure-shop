@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+
+<div class="container">
+    <br><br><br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <article class="card-body mx-auto" >
+                    <h4 class="card-title mt-3 text-center">Create Category</h4>
+                    <form action="/admin/categories" method="post">
+                        <div class="form-group input-group">
+                            <input name="name" required class="form-control" placeholder="Name"  type="text">
+                        </div> <!-- form-group// -->
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block"> Add  </button>
+                        </div> <!-- form-group// -->
+                    </form>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col"># Category ID</th>
+                        <th scope="col">Category Name</th>
+                        <th>Delete</th>
+                        <th>Update</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in categories %}
+                        <tr>
+                            <td scope="row">{{ c.id }}</td>
+                            <td>{{ c.name }}</td>
+                            <td><a href="/admin/categories/delete/{{c.id}}" class="btn btn-danger btn-sm">Delete</a></td>
+                            <td><a href="/admin/categories/update/{{c.id}}" class="btn btn-info btn-sm">Update</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

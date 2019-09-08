@@ -1,6 +1,7 @@
 (ns clojure_shop.validators.uservalidator
     (:require
         [struct.core :as st]
+        [clojure-shop.db.core :as db]
     ))
 
 (def first-name-regex (re-pattern "^[A-Z][a-z]{3,13}$"))
@@ -13,12 +14,12 @@
 (def unique-username
     {:message "Username is already in use."
      :optional false
-     :validate (fn [v] (not= v "luke"))} )
+     :validate (fn [v] (not (db/get-user-by-username {:username v})) )} )
 
 (def unique-email
     {:message "Email is already in use."
     :optional false
-    :validate (fn [v] (not= v "luka.lukic@ict.edu.rs"))})
+    :validate (fn [v] (not (db/get-user-by-email {:email v})) )})
 
 (def first-name-format
     {:message "Invalid firstname format."
@@ -27,9 +28,9 @@
 
 (def user-validator
     {:firstName [[st/required :message (req "First name")] 
-                 [first-name-format :message (format "Last name")]]
-     :lastName  [[st/required :message (req "First name")] 
                  [first-name-format :message (format "First name")]]
+     :lastName  [[st/required :message (req "Last name")]
+                 [first-name-format :message (format "Last name")]]
      :email     [[st/required :message (req "Email")] 
                  [st/email :message (format "Email")] 
                  [unique-email]]

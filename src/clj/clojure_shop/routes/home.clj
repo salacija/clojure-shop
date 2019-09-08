@@ -1,18 +1,16 @@
 (ns clojure-shop.routes.home
   (:require
     [clojure-shop.layout :as layout]
-    [clojure-shop.db.core :as db]
     [clojure-shop.middleware :as middleware]
+    [clojure-shop.db.core :as db]
     [ring.util.http-response :as response]
+    [ring.util.response :as ring-response]
     [clojure_shop.handlers.register_user_handler :as register-user]
     [clojure_shop.handlers.login_user_handler :as login-user]
-    [clojure-shop.session.helpers :as session]))
-
-(defn get-categories []
-  [{:id 0 :name "All"}
-   {:id 1 :name "Shirts"}
-   {:id 2 :name "Sports wears"}
-   {:id 3 :name "Outwears"}])
+    [clojure_shop.handlers.admin_handlers :as admin]
+    [clojure-shop.session.helpers :as session]
+    [ring.util.response :refer [redirect file-response]])
+  )
 
 (def all-products [
   {:id 1 :categoryId 1 :categoryName "All"          :name "Denim shirt" :isNew true :isBestSeller false :price 138 :image "https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" :description "Lorem ipsum dolor sit amet consectetur adipisicing elit. Et dolor suscipit libero eos atque quia ipsa sint voluptatibus! Beatae sit assumenda asperiores iure at maxime atque repellendus maiores quia sapiente."}
@@ -37,7 +35,7 @@
   (first (filter (fn [el] (= (:id el) productId)) all-products)))
 
 (defn home-page [request]
-  (layout/view request "home.html" {:categories (get-categories)
+  (layout/view request "home.html" {:categories (db/get-categories)
                                     :products (->
                                               (from-query request "categoryId")
                                               (get-products))}))
@@ -57,9 +55,7 @@
                                     :name (-> item :product :name)
                                     :quantity (:quantity item)
                                     :price (* (-> item :product :price) (:quantity item))}) cart-items))]
-    (layout/view _ "checkout.html" {:products products
-                                    :totalPrice (reduce + (map (fn [item] (:price item)) products))})
-    ))
+    (layout/view _ "checkout.html" {:products products :totalPrice (reduce + (map (fn [item] (:price item)) products))})))
 
 
 (defn login-page [_]
@@ -111,6 +107,17 @@
         cart-items (-> _ :session :cart)])
   (session/remove! :cart "/order-placed" _))
 
+(defn add-category-handler [_]
+  (if-let [success (db/create-category! (:params _))]
+    (ring-response/redirect "/admin/categories")
+    (ring-response/redirect "ERROR")))
+
+
+(defn handle-update-category [_]
+  (if-let [success (db/update-category! (:params _))]
+    (ring-response/redirect "/admin/categories")
+    (ring-response/redirect "error")))
+
 (defn home-routes []
   ["" {:middleware [middleware/wrap-formats]}
                 ["/"            {:get home-page}]
@@ -135,14 +142,44 @@
                 ["/remove-cart" {:middleware [session/logged-in]
                                  :get handle-remove-from-cart}]
 
-                ["/logout"      {:get (fn [request] (session/remove! :user "/" request))}]
+                ["/logout"      {:get (fn [_]
+                                        (session/destroy! "/"))}]
 
                 ["/place-order" {:post place-order-handler}]
+
+                ["/admin"       {:middleware [session/admin]
+                                 :get (fn [_] (layout/view _ "admin.html"))}]
+
+                ["/admin/orders" {:middleware [session/admin]
+                                  :get (fn [_] (layout/view _ "orders.html"))}]
+
+                ["/admin/categories" {:middleware [session/admin]
+                                      :get (fn [_] (layout/view _ "categories.html" {:categories (db/get-categories)}))
+                                      :post add-category-handler }]
+
+                ["/admin/categories/delete/:id" {:middleware [session/admin]
+                                                 :get (fn [_] (admin/delete _ db/delete-category! "categories"))}]
+                ["/admin/categories/update/:id"  {:middleware [session/admin]
+                                                 :get (fn [_] (layout/view _ "update-category.html" {:category (db/get-category {:id (:id (:path-params _))})}))
+                                                 :post handle-update-category}]
+
+                ["/admin/products" {:middleware [session/admin]
+                                    :get (fn [_] (layout/view _ "admin-products.html" {:products (db/get-products)}))
+                                    :post admin/add-product}]
+
+                ["/admin/products/create" {:middleware [session/admin]
+                                          :get (fn [_] (layout/view _ "create-product.html" {:categories (db/get-categories)}))}]
+
+                ["/admin/products/update/:id" {:middleware [session/admin]
+                                              :get (fn [_] (layout/view _ "update-product.html" { :product (db/get-product {:id (:id (:path-params _))})
+                                                                                             :categories (db/get-categories)}))
+                                              :post admin/update-product}]
+                ["/admin/products/delete/:id" {:middleware [session/admin]
+                                                :get (fn [_] (admin/delete _ db/delete-product! "products"))}]
 
                 ["/order-placed" {:get (fn [_] (layout/view _ "order-placed.html"))}]
 
                 ["/get-session" {:get (fn [request] (response/ok {:items (:session request)}))}]])
-
 
 
 

@@ -24,13 +24,12 @@
         (print "fake impl")))
 
 (defn execute [user]
-    (let 
-        [
-            val-result (val/validate-user user) 
-            errors (first val-result) 
-            data (second val-result)
-        ]
+    (let
+        [val-result (val/validate-user user)
+         errors (first val-result)]
         (if errors 
             {:errors (vals errors)} 
-            (do (send-registration-email data "test") {:items data}))))
+            (do
+                (if (db/create-user! user)
+                    (send-registration-email user "test"))))))
 

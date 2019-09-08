@@ -20,6 +20,15 @@
 (-> (ring-response/redirect redirect-to)
     (assoc :session (dissoc session key))))
 
+(defn destroy!
+  [redirect-to]
+  (-> (ring-response/redirect redirect-to)
+      (assoc :session {})))
+
 (defn logged-in [handler]
   (fn [request]
     (if-not (:user (:session request)) (ring-response/redirect "/") (handler request))))
+
+(defn admin [handler]
+  (fn [request]
+    (if-not (:isadmin (:user (:session request))) (ring-response/redirect "/") (handler request))))
