@@ -61,7 +61,7 @@ values (:name, :price, :description, :image, :categoryId, :isNew, :isBestSeller)
 
 -- :name update-product! :! :n
 update products
-set name = :name, price = :price, description = :description, image = :image, categoryId = :categoryId
+set name = :name, price = :price, description = :description, image = :image, categoryId = :categoryId, isBestSeller = :isBestSeller, isNew = :isNew
 where id = :id
 
 -- :name delete-product! :! :n
