@@ -56,8 +56,8 @@ DELETE FROM categories
 WHERE id = :id
 
 -- :name create-product! :! :n
-insert into products (name, price, description, image, categoryId)
-values (:name, :price, :description, :image, :categoryId)
+insert into products (name, price, description, image, categoryId, isNew, isBestSeller)
+values (:name, :price, :description, :image, :categoryId, :isNew, :isBestSeller)
 
 -- :name update-product! :! :n
 update products
@@ -68,11 +68,19 @@ where id = :id
 delete from products
 where id = :id
 
+-- :name get-products-by-category-id :? :*
+SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
+where c.Id = :categoryId
+
+-- :name get-featured-products :? :*
+SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
+WHERE isBestSeller = true limit 3
+
 -- :name get-products :? :*
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
 
 -- :name get-product :? :1
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
-WHERE p.id = :id
+WHERE p.id = :productId
 
 

@@ -75,7 +75,7 @@
                                           :get (fn [_] (layout/view _ "create-product.html" {:categories (db/get-categories)}))}]
 
                 ["/admin/products/update/:id" {:middleware [session/admin]
-                                              :get (fn [_] (layout/view _ "update-product.html" { :product (db/get-product {:id (:id (:path-params _))})
+                                              :get (fn [_] (layout/view _ "update-product.html" { :product (db/get-product {:productId (:id (:path-params _))})
                                                                                              :categories (db/get-categories)}))
                                               :post admin/update-product}]
                 ["/admin/products/delete/:id" {:middleware [session/admin]

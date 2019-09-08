@@ -12,7 +12,7 @@
         <!--Grid column-->
         <div class="col-md-6 mb-4">
 
-          <img src="{{ product.image }}" class="img-fluid" alt="">
+          <img src="img/{{ product.image }}" class="img-fluid" alt="">
 
         </div>
         <!--Grid column-->
@@ -78,11 +78,9 @@
         <!--Grid column-->
         <div class="col-md-6 text-center">
 
-          <h4 class="my-4 h4">Additional information</h4>
+          <h4 class="my-4 h4">Featured Products</h4>
 
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus suscipit modi sapiente illo soluta odit
-            voluptates,
-            quibusdam officia. Neque quibusdam quas a quis porro? Molestias illo neque eum in laborum.</p>
+          <p>Come and buy our featured products!.</p>
 
         </div>
         <!--Grid column-->
@@ -93,29 +91,17 @@
       <!--Grid row-->
       <div class="row wow fadeIn">
 
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-12 mb-4">
+        {% for product in featured-products %}
+          <!--Grid column-->
+          <div class="col-lg-4 col-md-12 mb-4">
 
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/11.jpg" class="img-fluid" alt="">
+            <a href="/products?productId={{product.id}}">
+              <img src="img/{{product.image}}" class="img-fluid" alt="">
+            </a>
 
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-6 mb-4">
-
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/12.jpg" class="img-fluid" alt="">
-
-        </div>
-        <!--Grid column-->
-
-        <!--Grid column-->
-        <div class="col-lg-4 col-md-6 mb-4">
-
-          <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Products/13.jpg" class="img-fluid" alt="">
-
-        </div>
-        <!--Grid column-->
+          </div>
+          <!--Grid column-->
+        {% endfor %}
 
       </div>
       <!--Grid row-->
