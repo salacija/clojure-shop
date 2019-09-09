@@ -49,7 +49,17 @@
                 ["/logout"      {:get (fn [_]
                                         (session/destroy! "/"))}]
 
-                ["/place-order" {:post place-order-handler}]
+                ["/place-order" {:middleware [session/logged-in]
+                                 :post (fn [_] (let [cart (:cart (:session _))
+                                                  order-form (:params _)
+                                                  order-info (assoc order-form :userId (:id (:user (:session _))))
+                                                  orderId  (:generated_key (db/create-order order-info))
+                                                  order-lines (map (fn [cart-item] {:productName (:name (:product cart-item))
+                                                                                    :quantity (:quantity cart-item)
+                                                                                    :price (:price (:product cart-item))
+                                                                                    :orderId orderId}) cart)]
+                                                 (doseq [order-line order-lines] (db/create-order-line order-line))
+                                                 (layout/view _ "order-placed.html" {:order {:id orderId :email (:email order-info)}})))}]
 
                 ["/admin"       {:middleware [session/admin]
                                  :get (fn [_] (layout/view _ "admin.html"))}]
@@ -80,8 +90,6 @@
                                               :post admin/update-product}]
                 ["/admin/products/delete/:id" {:middleware [session/admin]
                                                 :get (fn [_] (admin/delete _ db/delete-product! "products"))}]
-
-                ["/order-placed" {:get (fn [_] (layout/view _ "order-placed.html"))}]
 
                 ["/get-session" {:get (fn [request] (response/ok {:items (:session request)}))}]])
 

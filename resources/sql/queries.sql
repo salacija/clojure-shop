@@ -87,6 +87,6 @@ WHERE p.id = :productId
 insert into orders (userId, address, firstName, lastName, email) values (:userId, :address, :firstName, :lastName, :email)
 
 -- :name create-order-line :! :n
-insert into orderlines (orderId, productName, quantity, price) values (:orderId, :productName, :quanity, :price)
+insert into orderlines (orderId, productName, quantity, price) values (:orderId, :productName, :quantity, :price)
 
 
