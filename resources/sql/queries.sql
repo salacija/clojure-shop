@@ -83,4 +83,10 @@ SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
 WHERE p.id = :productId
 
+-- :name create-order :insert :raw
+insert into orders (userId, address, firstName, lastName, email) values (:userId, :address, :firstName, :lastName, :email)
+
+-- :name create-order-line :! :n
+insert into orderlines (orderId, productName, quantity, price) values (:orderId, :productName, :quanity, :price)
+
 

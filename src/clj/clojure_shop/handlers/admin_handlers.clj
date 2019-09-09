@@ -11,10 +11,10 @@
       shouldUploadImage  (> (:size (:file product)) 0)
       image (:file product)
       fileName (if
-                 (clojure.string/blank? (:filename product))
+                 (clojure.string/blank? (:filename (:file product)))
                  (if
                    (clojure.string/blank? (:image product)) "default.jpg" (:image product))
-                 (:filename (product)))  ]
+                 (:filename (:file product)))  ]
     (do
       (if shouldUploadImage
         (upload/upload-handler image))
