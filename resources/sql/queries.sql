@@ -99,3 +99,10 @@ select o.id, dateCreated, concat(firstName, ' ', lastName) as customer, sum(ol.p
 from orders o
 inner join orderlines ol ON o.id = ol.orderId
 group by o.id, dateCreated, firstName, lastName
+
+-- :name get-user-orders
+select o.id, dateCreated, concat(firstName, ' ', lastName) as customer, sum(ol.price * ol.quantity) as totalPrice
+from orders o
+inner join orderlines ol ON o.id = ol.orderId
+where o.userId = :userId
+group by o.id, dateCreated, firstName, lastName

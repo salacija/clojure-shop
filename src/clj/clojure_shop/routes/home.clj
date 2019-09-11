@@ -31,6 +31,8 @@
 
                 ["/products"     {:middleware [session/logged-in]
                                  :get pages/product}]
+                ["/orders"       {:middleware [session/logged-in]
+                                  :get (fn [_] (layout/view _ "orders.html" {:orders (db/get-user-orders {:userId (:id (:user (:session _)))})}))}]
 
                 ["/checkout"    {:middleware [session/logged-in]
                                  :get pages/checkout}]
@@ -39,6 +41,7 @@
                                  :post (fn [_] (let [username (:username (:params _))
                                                      password (:password (:params _))]
                                                  (login-user/execute _ username password)))}]
+
 
                 ["/add-to-cart" {:middleware [session/logged-in]
                                  :post cart/add}]

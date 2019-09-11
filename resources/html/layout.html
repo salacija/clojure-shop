@@ -48,6 +48,12 @@
           </li>
           {% if session.user %}
             <li class="nav-item">
+              <a class="nav-link waves-effect" href="/orders">Orders</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link waves-effect" href="/profile">Profile</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link waves-effect" href="/logout">Logout</a>
             </li>
           {% else %}
@@ -58,16 +64,16 @@
               <a class="nav-link waves-effect" href="/login">Login</a>
            </li>
           {% endif %}
-          {% if session.user.isadmin %}
-            <li class="nav-item">
-              <a class="nav-link waves-effect" href="/admin">Admin</a>
-            </li>
-          {% endif %}
         </ul>
 
        {% if session.user %}
         <!-- Right -->
         <ul class="navbar-nav nav-flex-icons">
+          {% if session.user.isadmin %}
+          <li class="nav-item">
+            <a class="nav-link waves-effect" href="/admin">Admin Panel</a>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link waves-effect" href="/checkout">
               <span class="badge red z-depth-1 mr-1"> {{ session.cart|count }} </span>
