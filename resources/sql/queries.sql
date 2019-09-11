@@ -89,4 +89,13 @@ insert into orders (userId, address, firstName, lastName, email) values (:userId
 -- :name create-order-line :! :n
 insert into orderlines (orderId, productName, quantity, price) values (:orderId, :productName, :quantity, :price)
 
+-- :name get-last-user-order-info :? :1
+select id, email
+from orders where userId = :userId
+limit 1
 
+-- :name get-all-orders
+select o.id, dateCreated, concat(firstName, ' ', lastName) as customer, sum(ol.price * ol.quantity) as totalPrice
+from orders o
+inner join orderlines ol ON o.id = ol.orderId
+group by o.id, dateCreated, firstName, lastName

@@ -58,14 +58,17 @@
                                                                                     :quantity (:quantity cart-item)
                                                                                     :price (:price (:product cart-item))
                                                                                     :orderId orderId}) cart)]
-                                                 (doseq [order-line order-lines] (db/create-order-line order-line))
-                                                 (layout/view _ "order-placed.html" {:order {:id orderId :email (:email order-info)}})))}]
-
+                                                 (do (doseq [order-line order-lines] (db/create-order-line order-line))
+                                                     (session/remove! :cart "/order-placed" _))))}]
+                ["/order-placed" {:middleware [session/admin]
+                                  :get (fn [_] (layout/view _ "order-placed.html" (let [userId (:id (:user (:session _)))
+                                                                                        order (db/get-last-user-order-info {:userId userId})]
+                                                                                    {:order order})))}]
                 ["/admin"       {:middleware [session/admin]
                                  :get (fn [_] (layout/view _ "admin.html"))}]
 
                 ["/admin/orders" {:middleware [session/admin]
-                                  :get (fn [_] (layout/view _ "orders.html"))}]
+                                  :get (fn [_] (layout/view _ "orders.html" {:orders (db/get-all-orders)}))}]
 
                 ["/admin/categories" {:middleware [session/admin]
                                       :get (fn [_] (layout/view _ "categories.html" {:categories (db/get-categories)}))
