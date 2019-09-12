@@ -42,6 +42,7 @@ WHERE id = :id
 -- :name get-categories :? :*
 -- :doc retrieve all categories.
 SELECT * FROM categories
+WHERE id IN (SELECT DISTINCT categoryId FROM Products)
 
 -- :name create-category! :! :n
 INSERT INTO categories (name) values (:name)
@@ -78,6 +79,10 @@ WHERE isBestSeller = true limit 3
 
 -- :name get-products :? :*
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
+
+-- :name search-products :? :*
+SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
+where p.name LIKE concat('%' :keyword '%')
 
 -- :name get-product :? :1
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id

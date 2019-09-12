@@ -16,8 +16,13 @@
       param)))
 
 (defn home [request]
-  (layout/view request "home.html" {:categories (db/get-categories)
-                                    :products (db/get-products-by-category-id {:categoryId (from-query request "categoryId")})}))
+  (let [categoryId (from-query request "categoryId")
+        keyword (from-query request "keyword")
+        db-function (if keyword db/search-products db/get-products-by-category-id)
+        db-params {:categoryId categoryId :keyword keyword}
+        ]
+    (layout/view request "home.html" {:categories (db/get-categories)
+                                      :products (db-function db-params)})))
 (defn register [_]
   (layout/view _ "register.html"))
 
