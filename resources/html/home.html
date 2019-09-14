@@ -7,7 +7,11 @@
 {% endblock %}
 
 {% block content %}
-
+<style>
+    .card {
+        min-height: 350px;
+    }
+</style>
 <br><br><br>
       <!--Main layout-->
   <main>
@@ -62,15 +66,15 @@
           {% if products|count %}
 
             {% for p in products %}
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-3 col-md-6 mb-4" height="200">
                 <!--Card-->
-                <div class="card">
+                <div class="card" >
 
                     <!--Card image-->
-                    <div class="view overlay">
-                        <img src="img/{{p.image}}" class="card-img-top"
+                    <div class="view overlay item">
+                        <img height="180" src="img/{{p.image}}" class="card-img-top"
                              alt="">
-                        <a>
+                        <a href="/products?productId={{ p.id }}">
                             <div class="mask rgba-white-slight"></div>
                         </a>
                     </div>
@@ -79,26 +83,23 @@
                     <!--Card content-->
                     <div class="card-body text-center">
                         <!--Category & Title-->
-                        <a href="" class="grey-text">
-                            <h5>{{ p.categoryName }}</h5>
+                        <a href="?categoryId={{p.categoryid}}" class="grey-text">
+                            <h5>{{ p.categoryname }}</h5>
                         </a>
                         <h5>
                             <strong>
-                                <a href="/products?productId={{ p.id }}" class="dark-grey-text">{{ p.name }}
+                                <a href="/products?productId={{ p.id }}" class="dark-grey-text lead" style="font-size: 15px">{{ p.name }}
                                     {% if p.isnew = 1 %}
-                                    <span class="badge badge-pill danger-color">NEW</span>
+                                    <span class="badge badge-pill danger-color" style="font-size: 10px">NEW</span>
                                     {% endif %}
 
                                     {% if p.isbestseller = 1 %}
-                                    <span class="badge badge-pill info-color">BESTSELLER</span>
+                                    <span class="badge badge-pill info-color" style="font-size: 10px">BESTSELLER</span>
                                     {% endif %}
                                 </a>
                             </strong>
                         </h5>
-
-                        <h4 class="font-weight-bold blue-text">
-                            <strong>{{p.price}}$</strong>
-                        </h4>
+                        <strong style="font-size: 15px">{{p.price}}$</strong>
 
                     </div>
                     <!--Card content-->
