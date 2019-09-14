@@ -18,7 +18,7 @@
 (defn home [request]
   (let [categoryId (from-query request "categoryId")
         keyword (from-query request "keyword")
-        db-function (if keyword db/search-products db/get-products-by-category-id)
+        db-function (if keyword db/search-products (if categoryId db/get-products-by-category-id db/get-all-products))
         db-params {:categoryId categoryId :keyword keyword}
         ]
     (layout/view request "home.html" {:categories (db/get-categories)
@@ -32,6 +32,12 @@
                                    :featured-products (db/get-featured-products)})
     (layout/error-page {:error-details "Requested product doesnt' exist."}))
   )
+
+(defn profile [_]
+  (layout/view _ "profile.html"))
+
+(defn edit-profile [_]
+  (layout/view _ "edit-profile.html"))
 
 (defn checkout [_]
   (let [products (let [cart-items (-> _ :session :cart)]

@@ -6,6 +6,11 @@ INSERT INTO users
 (firstName, lastName, email, address, username, password)
 VALUES (:firstName, :lastName, :email, :address, :username, :password)
 
+-- :name update-user! :! :n
+UPDATE users
+SET firstName = :firstName, lastName = :lastName, email = :email, address = :address
+WHERE id = :id
+
 -- :name get-user-by-username :? :1
 SELECT * FROM users
 WHERE username = :username
@@ -17,12 +22,6 @@ WHERE email = :email
 -- :name login-user :? :1
 SELECT * FROM users
 WHERE username = :username AND password = :password
-
--- :name update-user! :! :n
--- :doc updates an existing user record
-UPDATE users
-SET first_name = :first_name, last_name = :last_name, email = :email
-WHERE id = :id
 
 -- :name get-user :? :1
 -- :doc retrieves a user record given the id
@@ -73,6 +72,9 @@ where id = :id
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
 where c.Id = :categoryId
 
+-- :name get-all-products :? :*
+SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
+
 -- :name get-featured-products :? :*
 SELECT p.*, c.name as categoryName from products p INNER JOIN categories c ON p.categoryId = c.Id
 WHERE isBestSeller = true limit 3
@@ -97,7 +99,16 @@ insert into orderlines (orderId, productName, quantity, price) values (:orderId,
 -- :name get-last-user-order-info :? :1
 select id, email
 from orders where userId = :userId
+order by id desc
 limit 1
+
+-- :name email-already-in-use :? :1
+select COUNT(*) as isTaken from
+users where email = :email AND id <> :userId
+
+-- :name username-already-in-use :? :1
+select COUNT(*) as isTaken from
+users where username = :username AND id <> :userId
 
 -- :name get-all-orders
 select o.id, dateCreated, concat(firstName, ' ', lastName) as customer, sum(ol.price * ol.quantity) as totalPrice

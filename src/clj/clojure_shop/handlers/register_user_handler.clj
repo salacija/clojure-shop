@@ -1,7 +1,6 @@
 (ns clojure_shop.handlers.register_user_handler
     (:require
         [clojure_shop.validators.uservalidator :as val]
-        [ring.util.http-response :as response]
         [postal.core :as email]
         [clojure-shop.layout :as layout]
         [clojure-shop.db.core :as db]
@@ -12,11 +11,11 @@
 (defn send-registration-email  
     ([user]
         (email/send-message {:host "smtp.gmail.com"
-                            :user "lukeelukic@gmail.com"
-                            :pass "Teamlukic14"
+                            :user "emailforclojure@gmail.com"
+                            :pass "clojuretest1"
                             :tls true
                             :port 587}
-                            {:from "lukeelukic@gmail.com",
+                            {:from "Clojure Project",
                             :to (:email user)
                             :subject "Registration"
                             :body "You have successfully registered to our website!"}))
@@ -31,5 +30,5 @@
             {:errors (vals errors)} 
             (do
                 (if (db/create-user! user)
-                    (send-registration-email user "test"))))))
+                    (send-registration-email user))))))
 

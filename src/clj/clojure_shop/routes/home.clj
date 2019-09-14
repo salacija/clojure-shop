@@ -37,6 +37,13 @@
                 ["/checkout"    {:middleware [session/logged-in]
                                  :get pages/checkout}]
 
+                ["/profile"    {:middleware [session/logged-in]
+                                 :get pages/profile}]
+
+                ["/profile/edit"    {:middleware [session/logged-in]
+                                     :get pages/edit-profile
+                                     :post  (fn [_] (do (db/update-user! (assoc (:params _) :id (:id (:user (:session _))))) (redirect "/profile")))}]
+
                 ["/login"       {:get pages/login
                                  :post (fn [_] (let [username (:username (:params _))
                                                      password (:password (:params _))]
@@ -62,6 +69,18 @@
                                                                                     :price (:price (:product cart-item))
                                                                                     :orderId orderId}) cart)]
                                                  (do (doseq [order-line order-lines] (db/create-order-line order-line))
+                                                     (postal.core/send-message {:host "smtp.gmail.com"
+                                                                                :user "emailforclojure@gmail.com"
+                                                                                :pass "clojuretest1"
+                                                                                :tls true
+                                                                                :port 587}
+                                                                               {:from "emailforclojure@gmail.com",
+                                                                                :to (:email order-info)
+                                                                                :subject "Order placed"
+                                                                                :body [
+                                                                                       {:type "text/html"
+                                                                                        :content (selmer.parser/render-file "email.html" {:order-info order-info
+                                                                                                                                          :order-lines order-lines})}]})
                                                      (session/remove! :cart "/order-placed" _))))}]
                 ["/order-placed" {:middleware [session/logged-in]
                                   :get (fn [_] (layout/view _ "order-placed.html" (let [userId (:id (:user (:session _)))
@@ -97,7 +116,13 @@
                 ["/admin/products/delete/:id" {:middleware [session/admin]
                                                 :get (fn [_] (admin/delete _ db/delete-product! "products"))}]
 
-                ["/get-session" {:get (fn [request] (response/ok {:items (:session request)}))}]])
+                ["/check-username" {:get (fn [_] (response/ok (let [user (:user (:session _))]
+                                                                      (db/username-already-in-use {:userId (:id user)
+                                                                                                   :username (:username (:params _))}))))}]
+               ["/check-email" {:get (fn [_] (response/ok (let [user (:user (:session _))]
+                                                               (db/email-already-in-use {:userId (:id user)
+                                                                                            :email (:email (:params _))}))))}]
+   ])
 
 
 

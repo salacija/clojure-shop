@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<br><br><br><br>
+<div class="container">
+    <p class="lead">Orders</p>
+    <ul>
+        <li>First Name: {{ session.user.firstname }}</li>
+        <li>Last Name: {{ session.user.lastname }}</li>
+        <li>Email: {{ session.user.email }}</li>
+        <li>Username: {{ session.user.username }}</li>
+        <li>Address: {{ session.user.address }}</li>
+    </ul>
+    <a class="btn btn-info btn-sm" href="/profile/edit">Edit Your Profile</a>
+    <a class="btn btn-info btn-sm" href="/orders">Your Orders</a>
+</div>
+
+{% endblock %}
