@@ -42,25 +42,25 @@
 
         <!-- Left -->
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
+          <li class="nav-item" id="home">
             <a class="nav-link waves-effect" href="/">Home
             </a>
           </li>
           {% if session.user %}
-            <li class="nav-item">
+            <li class="nav-item" id="orders">
               <a class="nav-link waves-effect" href="/orders">Orders</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="profile">
               <a class="nav-link waves-effect" href="/profile">Profile</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="logout">
               <a class="nav-link waves-effect" href="/logout">Logout</a>
             </li>
           {% else %}
-           <li class="nav-item">
+           <li class="nav-item" id="register">
               <a class="nav-link waves-effect" href="/register">Register</a>
            </li>
-           <li class="nav-item">
+           <li class="nav-item" id="login">
               <a class="nav-link waves-effect" href="/login">Login</a>
            </li>
           {% endif %}
@@ -70,11 +70,11 @@
         <!-- Right -->
         <ul class="navbar-nav nav-flex-icons">
           {% if session.user.isadmin %}
-          <li class="nav-item">
-            <a class="nav-link waves-effect" href="/admin">Admin Panel</a>
+          <li class="nav-item" id="admin">
+            <a class="nav-link waves-effect"  href="/admin">Admin Panel</a>
           </li>
           {% endif %}
-          <li class="nav-item">
+          <li class="nav-item" id="checkout">
             <a class="nav-link waves-effect" href="/checkout">
               <span class="badge red z-depth-1 mr-1"> {{ session.cart|count }} </span>
               <i class="fas fa-shopping-cart"></i>
@@ -122,6 +122,39 @@
 
   {% block scripts %}
   {% endblock %}
+  <script>
+    $(document).ready(function () {
+      selectAppropriateNavMenuItem();
+    });
+
+    function selectAppropriateNavMenuItem() {
+      var urlToNavItem = [
+        { path : "/", id: "home"},
+        { path : "/register", id: "register"},
+        { path : "/login", id: "login"},
+        { path : "/orders", id: "orders"},
+        { path : "/profile", id: "profile"},
+        { path : "/checkout", id: "checkout"},
+        { path : "/admin", id: "admin"}
+      ];
+
+      var urlPath = window.location.pathname;
+
+      var navItemId = getNavItemId();
+
+      $(".nav-item").removeClass("active");
+
+      $("#" + navItemId).addClass("active");
+
+      function getNavItemId() {
+        return urlToNavItem.filter(function(item) {
+          return item.path === urlPath
+        }).map(function (item) {
+          return item.id
+        })[0];
+      }
+    }
+  </script>
 </body>
 
 </html>
