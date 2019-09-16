@@ -93,7 +93,7 @@
                                   :get (fn [_] (layout/view _ "orders.html" {:orders (db/get-all-orders)}))}]
 
                 ["/admin/categories" {:middleware [session/admin]
-                                      :get (fn [_] (layout/view _ "categories.html" {:categories (db/get-categories)}))
+                                      :get (fn [_] (layout/view _ "categories.html" {:categories (db/get-all-categories)}))
                                       :post admin/add-category }]
 
                 ["/admin/categories/delete/:id" {:middleware [session/admin]

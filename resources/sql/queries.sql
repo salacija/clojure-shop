@@ -43,6 +43,9 @@ WHERE id = :id
 SELECT * FROM categories
 WHERE id IN (SELECT DISTINCT categoryId FROM Products)
 
+-- :name get-all-categories :? :*
+SELECT * FROM categories
+
 -- :name create-category! :! :n
 INSERT INTO categories (name) values (:name)
 
